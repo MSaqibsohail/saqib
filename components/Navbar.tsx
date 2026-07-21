@@ -16,7 +16,7 @@ const NAV_ITEMS = [
   { label: 'Contact', id: 'contact' },
 ];
 
-const resumeUrl = process.env.NODE_ENV === 'production' ? '/saqib/saqib_cv.docx' : '/saqib_cv.docx';
+const resumeUrl = process.env.NODE_ENV === 'production' ? '/saqib/saqib_cv.pdf' : '/saqib_cv.pdf';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -111,7 +111,9 @@ export default function Navbar() {
           
           <a
             href={resumeUrl}
-            download="Saqib_Sohail_CV.docx"
+            target="_blank"
+            rel="noopener noreferrer"
+            download="Saqib_Sohail_CV.pdf"
             className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-flutter-blue to-flutter-secondary text-white hover:shadow-lg hover:shadow-flutter-secondary/25 hover:-translate-y-0.5 transition-all duration-300 border border-white/10"
           >
             <FileText className="w-4 h-4" />
@@ -159,7 +161,9 @@ export default function Navbar() {
               ))}
               <a
                 href={resumeUrl}
-                download="Saqib_Sohail_CV.docx"
+                target="_blank"
+                rel="noopener noreferrer"
+                download="Saqib_Sohail_CV.pdf"
                 className="mt-2 flex items-center justify-center gap-2 w-full py-3.5 text-center text-sm font-bold uppercase tracking-widest rounded-xl bg-gradient-to-r from-flutter-blue to-flutter-secondary text-white hover:opacity-90"
               >
                 <FileText className="w-4 h-4" />
