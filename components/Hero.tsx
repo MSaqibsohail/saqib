@@ -140,7 +140,7 @@ export default function Hero() {
             </button>
 
             <a
-              href="/saqib_cv.docx"
+              href="saqib_cv.docx"
               download
               className="px-8 py-4 font-semibold rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white/40 dark:bg-dark-bg/40 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:border-slate-300 dark:hover:border-flutter-blue/30 backdrop-blur-md transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-sm"
             >
