@@ -59,9 +59,7 @@ export default function Hero() {
   const handleScrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
-      const offset = 80;
-      const elementPosition = el.getBoundingClientRect().top + window.scrollY;
-      const offsetPosition = elementPosition - offset;
+      const offsetPosition = Math.max(0, el.offsetTop - 80);
       window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
     }
   };

@@ -81,19 +81,16 @@ export default function Navbar() {
 
     const element = document.getElementById(id);
     if (element) {
-      const offset = 80;
-      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-      const offsetPosition = elementPosition - offset;
+      const offsetPosition = Math.max(0, element.offsetTop - 80);
 
       window.scrollTo({
         top: offsetPosition,
         behavior: 'smooth'
       });
 
-      // Re-enable manual scroll tracking after smooth scroll completes
       navTimeoutRef.current = setTimeout(() => {
         isNavigatingRef.current = false;
-      }, 700);
+      }, 600);
     } else {
       isNavigatingRef.current = false;
     }
