@@ -27,6 +27,8 @@ const FLOATING_TECHS = [
   { name: 'machine learning', bottom: '48%', right: '18%', speed: 'animate-float-medium' },
 ];
 
+const resumeUrl = process.env.NODE_ENV === 'production' ? '/saqib/saqib_cv.docx' : '/saqib_cv.docx';
+
 export default function Hero() {
   const [roleIndex, setRoleIndex] = useState(0);
   const [currentText, setCurrentText] = useState('');
@@ -140,8 +142,8 @@ export default function Hero() {
             </button>
 
             <a
-              href="saqib_cv.docx"
-              download
+              href={resumeUrl}
+              download="Saqib_Sohail_CV.docx"
               className="px-8 py-4 font-semibold rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white/40 dark:bg-dark-bg/40 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:border-slate-300 dark:hover:border-flutter-blue/30 backdrop-blur-md transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-sm"
             >
               <span>Download Resume</span>

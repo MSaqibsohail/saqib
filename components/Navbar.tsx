@@ -16,61 +16,45 @@ const NAV_ITEMS = [
   { label: 'Contact', id: 'contact' },
 ];
 
+const resumeUrl = process.env.NODE_ENV === 'production' ? '/saqib/saqib_cv.docx' : '/saqib_cv.docx';
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
 
-  // Change navbar background on scroll
+  // Change navbar background & track active section on scroll
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
+      setScrolled(window.scrollY > 20);
+
+      const scrollPosition = window.scrollY + 120;
+      const sections = NAV_ITEMS.map((item) => ({
+        id: item.id,
+        element: document.getElementById(item.id),
+      })).filter((item): item is { id: string; element: HTMLElement } => item.element !== null);
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const { id, element } = sections[i];
+        if (element.offsetTop <= scrollPosition) {
+          setActiveSection(id);
+          break;
+        }
       }
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Track active section via IntersectionObserver
-  useEffect(() => {
-    const activeObservers: { observer: IntersectionObserver; el: HTMLElement }[] = [];
-
-    NAV_ITEMS.forEach((item) => {
-      const el = document.getElementById(item.id);
-      if (!el) return;
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              setActiveSection(item.id);
-            }
-          });
-        },
-        { threshold: 0.25, rootMargin: '-80px 0px -40% 0px' }
-      );
-      observer.observe(el);
-      activeObservers.push({ observer, el });
-    });
-
-    return () => {
-      activeObservers.forEach((obs) => {
-        obs.observer.unobserve(obs.el);
-      });
-    };
   }, []);
 
   const handleNavClick = (id: string) => {
     setIsOpen(false);
+    setActiveSection(id);
     const element = document.getElementById(id);
     if (element) {
       const offset = 80;
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = element.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
       const offsetPosition = elementPosition - offset;
 
       window.scrollTo({
@@ -126,8 +110,8 @@ export default function Navbar() {
           <ThemeToggle />
           
           <a
-            href="saqib_cv.docx"
-            download
+            href={resumeUrl}
+            download="Saqib_Sohail_CV.docx"
             className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-flutter-blue to-flutter-secondary text-white hover:shadow-lg hover:shadow-flutter-secondary/25 hover:-translate-y-0.5 transition-all duration-300 border border-white/10"
           >
             <FileText className="w-4 h-4" />
@@ -174,8 +158,8 @@ export default function Navbar() {
                 </button>
               ))}
               <a
-                href="saqib_cv.docx"
-                download
+                href={resumeUrl}
+                download="Saqib_Sohail_CV.docx"
                 className="mt-2 flex items-center justify-center gap-2 w-full py-3.5 text-center text-sm font-bold uppercase tracking-widest rounded-xl bg-gradient-to-r from-flutter-blue to-flutter-secondary text-white hover:opacity-90"
               >
                 <FileText className="w-4 h-4" />
