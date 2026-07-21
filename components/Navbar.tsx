@@ -23,28 +23,45 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
 
-  // Change navbar background & track active section on scroll
+  // Change navbar background & track active section on scroll with 60fps rAF throttling
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+    let ticking = false;
 
-      const scrollPosition = window.scrollY + 120;
-      const sections = NAV_ITEMS.map((item) => ({
-        id: item.id,
-        element: document.getElementById(item.id),
-      })).filter((item): item is { id: string; element: HTMLElement } => item.element !== null);
+    const updateScrollState = () => {
+      const scrollY = window.scrollY;
 
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const { id, element } = sections[i];
-        if (element.offsetTop <= scrollPosition) {
-          setActiveSection(id);
+      // Update background blur state only when changed
+      const isScrolled = scrollY > 20;
+      setScrolled((prev) => (prev !== isScrolled ? isScrolled : prev));
+
+      // Calculate active section
+      const scrollPosition = scrollY + 140;
+      let currentId = 'home';
+
+      for (let i = NAV_ITEMS.length - 1; i >= 0; i--) {
+        const item = NAV_ITEMS[i];
+        const el = document.getElementById(item.id);
+        if (el && el.offsetTop <= scrollPosition) {
+          currentId = item.id;
           break;
         }
+      }
+
+      // Update active section state only when section changes
+      setActiveSection((prev) => (prev !== currentId ? currentId : prev));
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateScrollState);
+        ticking = true;
       }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
+    updateScrollState();
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -97,7 +114,7 @@ export default function Navbar() {
                 <motion.span
                   layoutId="activeTab"
                   className="absolute inset-0 bg-gradient-to-r from-flutter-blue to-flutter-secondary rounded-full -z-10 shadow-sm"
-                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  transition={{ type: 'spring', stiffness: 450, damping: 35, mass: 0.6 }}
                 />
               )}
               {item.label}
