@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X, FileText } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,6 +22,8 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const isNavigatingRef = useRef(false);
+  const navTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Change navbar background & track active section on scroll with 60fps rAF throttling
   useEffect(() => {
@@ -34,21 +36,23 @@ export default function Navbar() {
       const isScrolled = scrollY > 20;
       setScrolled((prev) => (prev !== isScrolled ? isScrolled : prev));
 
-      // Calculate active section
-      const scrollPosition = scrollY + 140;
-      let currentId = 'home';
+      // Skip intermediate section updates while programmatically scrolling
+      if (!isNavigatingRef.current) {
+        const scrollPosition = scrollY + 140;
+        let currentId = 'home';
 
-      for (let i = NAV_ITEMS.length - 1; i >= 0; i--) {
-        const item = NAV_ITEMS[i];
-        const el = document.getElementById(item.id);
-        if (el && el.offsetTop <= scrollPosition) {
-          currentId = item.id;
-          break;
+        for (let i = NAV_ITEMS.length - 1; i >= 0; i--) {
+          const item = NAV_ITEMS[i];
+          const el = document.getElementById(item.id);
+          if (el && el.offsetTop <= scrollPosition) {
+            currentId = item.id;
+            break;
+          }
         }
+
+        setActiveSection((prev) => (prev !== currentId ? currentId : prev));
       }
 
-      // Update active section state only when section changes
-      setActiveSection((prev) => (prev !== currentId ? currentId : prev));
       ticking = false;
     };
 
@@ -62,12 +66,19 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     updateScrollState();
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (navTimeoutRef.current) clearTimeout(navTimeoutRef.current);
+    };
   }, []);
 
   const handleNavClick = (id: string) => {
     setIsOpen(false);
     setActiveSection(id);
+    isNavigatingRef.current = true;
+
+    if (navTimeoutRef.current) clearTimeout(navTimeoutRef.current);
+
     const element = document.getElementById(id);
     if (element) {
       const offset = 80;
@@ -78,6 +89,13 @@ export default function Navbar() {
         top: offsetPosition,
         behavior: 'smooth'
       });
+
+      // Re-enable manual scroll tracking after smooth scroll completes
+      navTimeoutRef.current = setTimeout(() => {
+        isNavigatingRef.current = false;
+      }, 700);
+    } else {
+      isNavigatingRef.current = false;
     }
   };
 

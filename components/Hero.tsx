@@ -60,9 +60,7 @@ export default function Hero() {
     const el = document.getElementById(id);
     if (el) {
       const offset = 80;
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = el.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
+      const elementPosition = el.getBoundingClientRect().top + window.scrollY;
       const offsetPosition = elementPosition - offset;
       window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
     }
